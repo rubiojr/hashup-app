@@ -70,6 +70,7 @@ func natsStreamInfoHandler() error {
 		nc, err := nats.Connect(config.Main.NatsServerURL)
 		if err != nil {
 			http.Error(w, fmt.Errorf("Error connecting to NATS server: %w", err).Error(), http.StatusInternalServerError)
+			return
 		}
 
 		js, _ := jetstream.New(nc)
