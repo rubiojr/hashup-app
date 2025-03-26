@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -16,6 +18,50 @@ import (
 	"github.com/rubiojr/hashup-app/internal/templates"
 	"github.com/urfave/cli/v2"
 )
+
+var emptyJSON = `{"total_count": 0, "total_size_human": "0B", "extensions": []}`
+var fileStatsJSON = ""
+var once sync.Once
+var mutex sync.Mutex
+
+func getFileStats() string {
+	once.Do(func() {
+		go func() {
+			dbConn, err := dbConn("")
+			if err != nil {
+				log.Printf("Error connecting to database: %v", err)
+				return
+			}
+			defer dbConn.Close()
+
+			for {
+				now := time.Now()
+				stats, err := fileStats(dbConn, "file_size", true, "")
+				if err != nil {
+					log.Printf("Error getting file stats: %v", err)
+					continue
+				}
+
+				mutex.Lock()
+				fileStatsJSON, err = jsonStats(stats, "", 10)
+				mutex.Unlock()
+				if err != nil {
+					log.Printf("Error converting file stats to JSON: %v", err)
+				}
+				elapsed := time.Since(now)
+				log.Printf("fileStats took %s", elapsed)
+				time.Sleep(time.Second * 120)
+			}
+		}()
+	})
+
+	if mutex.TryLock() {
+		defer mutex.Unlock()
+		return fileStatsJSON
+	}
+
+	return emptyJSON
+}
 
 func healthHandlers() {
 	http.HandleFunc("/health/nats", func(w http.ResponseWriter, r *http.Request) {
@@ -35,26 +81,11 @@ func healthHandlers() {
 
 func fileStatsHandler() {
 	http.HandleFunc("/stats/files", func(w http.ResponseWriter, r *http.Request) {
-		dbConn, err := dbConn("")
-		if err != nil {
-			http.Error(w, fmt.Errorf("failed to get database connection: %v", err).Error(), http.StatusInternalServerError)
-			return
+		var stats string
+		for stats = getFileStats(); stats == ""; stats = getFileStats() {
+			time.Sleep(100 * time.Millisecond)
 		}
-		defer dbConn.Close()
-
-		stats, err := fileStats(dbConn, "file_size", true, "")
-		if err != nil {
-			http.Error(w, fmt.Errorf("failed to get file stats: %v", err).Error(), http.StatusInternalServerError)
-			return
-		}
-
-		jsonData, err := jsonStats(stats, "", 10)
-		if err != nil {
-			http.Error(w, fmt.Errorf("failed to generate JSON stats: %v", err).Error(), http.StatusInternalServerError)
-			return
-		}
-
-		fmt.Fprintf(w, "%s", jsonData)
+		fmt.Fprintf(w, "%s", stats)
 	})
 }
 
@@ -173,6 +204,7 @@ func searchHandler(c *cli.Context) {
 }
 
 func serveAPI(addr string, c *cli.Context) error {
+	getFileStats()
 	searchHandler(c)
 	err := natsStreamInfoHandler()
 	if err != nil {

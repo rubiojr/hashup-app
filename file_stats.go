@@ -72,7 +72,7 @@ func fileStats(db *sql.DB, orderBy string, descending bool, host string) (*Exten
 			SELECT extension, COUNT(*) as count, SUM(file_size) AS total_size
 			FROM file_info
 			WHERE host = ?
-			GROUP BY extension
+			GROUP BY extension COLLATE NOCASE
 			ORDER BY %s %s
 		`, column, sortOrder)
 
