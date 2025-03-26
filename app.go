@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/rubiojr/gapp/pkg/glance"
+	webview "github.com/rubiojr/hashup-app/_webview"
 	"github.com/urfave/cli/v2"
-	webview "github.com/webview/webview_go"
 
 	_ "embed"
 )
