@@ -1,0 +1,79 @@
+#server:
+#port: 7878
+#assets-path: ${HOME}/.config/glance/assets
+
+branding:
+  #logo-url: /assets/logo.png
+  #favicon-url: /assets/logo.png
+  logo-text: HashUp
+  custom-footer: |
+    <script>
+    if (pageData.slug === 'hashup') {
+      setTimeout(() => location.reload(), 120 * 1000);
+      document.write(`<div style="text-align:right;font-size:0.8em;color:#666">Last updated: ${new Date().toLocaleString('en-US', {timeZone: 'UTC'})}</div>`);
+    }
+    </script>
+
+theme:
+  background-color: 50 1 6
+  primary-color: 24 97 58
+  negative-color: 209 88 54
+
+pages:
+  - name: HashUp
+    columns:
+      - size: small
+        widgets:
+          - type: server-stats
+            servers:
+              - type: local
+          - type: custom-api
+            title: NATS Stream
+            cache: 10s
+            url: http://localhost:@@API_PORT@@/stats/nats/stream/info
+            template: |
+              <div><p class="color-primary">Leader</p>{{ .JSON.String "cluster_leader" }}</div>
+              <div><p class="color-primary">Cluster Name</p>{{ .JSON.String "cluster_name" }}</div>
+              <div><p class="color-primary">Stream Name</p>{{ .JSON.String "stream_name" }}</div>
+              <hr style="margin: 8px; padding: 2px;"/>
+              <div><span class="color-primary">Messages:</span> {{ .JSON.String "messages" }}</div>
+              <div><span class="color-primary">Bytes:</span> {{ .JSON.String "bytes" }}</div>
+              <div><span class="color-primary">Consumers:</span> {{ .JSON.String "consumer_count" }}</div>
+          - type: monitor
+            cache: 30s
+            title: Health
+            sites:
+              - title: NATS Server
+                url: http://localhost:@@API_PORT@@/health/nats
+      - size: full
+        widgets:
+          - type: iframe
+            source: http://localhost:@@API_PORT@@
+            height: 650
+            title: " "
+      - size: small
+        widgets:
+          - type: custom-api
+            title: File Stats
+            cache: 10s
+            url: http://localhost:@@API_PORT@@/stats/files
+            template: |
+              <div><span class="color-primary">Files:</span> {{ .JSON.String "total_count" }}</div>
+              <div><span class="color-primary">Total Size:</span> {{ .JSON.String "total_size_human" }}</div>
+
+              <ul class="list list-gap-10 collapsible-container" data-collapse-after="5">
+              <div><span class="color-primary">Top Extensions</div>
+                {{ range .JSON.Array "extensions" }}
+                  <li>
+                    <a class="size-title-dynamic color-primary-if-not-visited" href="{{ .String "url" }}">{{ .String "title" }}</a>
+                    <ul class="list-horizontal-text">
+                      <li>
+                      {{ .String "extension" | printf "%s" }}
+                      </li>
+                      <li>
+                        {{ .String "size_human" }}
+                      </li>
+                    </ul>
+                  </li>
+                {{ end }}
+              </ul>
