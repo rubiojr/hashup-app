@@ -19,10 +19,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var emptyJSON = `{"total_count": 0, "total_size_human": "0B", "extensions": []}`
-var fileStatsJSON = ""
+var fileStatsJSON = `{"total_count": 0, "total_size_human": "0B", "extensions": []}`
 var once sync.Once
-var mutex sync.Mutex
 
 func getFileStats() string {
 	once.Do(func() {
@@ -42,9 +40,7 @@ func getFileStats() string {
 					continue
 				}
 
-				mutex.Lock()
 				fileStatsJSON, err = jsonStats(stats, "", 10)
-				mutex.Unlock()
 				if err != nil {
 					log.Printf("Error converting file stats to JSON: %v", err)
 				}
@@ -55,12 +51,7 @@ func getFileStats() string {
 		}()
 	})
 
-	if mutex.TryLock() {
-		defer mutex.Unlock()
-		return fileStatsJSON
-	}
-
-	return emptyJSON
+	return fileStatsJSON
 }
 
 func healthHandlers() {
