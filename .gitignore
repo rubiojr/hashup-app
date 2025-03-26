@@ -1,1 +1,4 @@
-/hashup-app
+hashup-app
+/dist
+.DS_store
+/bin

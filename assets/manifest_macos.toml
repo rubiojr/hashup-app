@@ -1,0 +1,18 @@
+# Application bundling configuration
+# Directory containing your binary and any other assets to include in the bundle
+assets_dir = "./assets"
+
+# Name of your compiled binary
+binary_name = "hashup-app"
+
+# Path to your application icon file (png, jpg, gif, tiff, or svg)
+icon_file = "./assets/hashup.png"
+
+# Name of the application as it will appear to users
+app_name = "HashUp"
+
+# Directory where the .app bundle will be created
+output_dir = "./dist"
+
+# Bundle identifier (reverse domain notation is recommended)
+bundle_identifier = "co.rbel.hashup"
