@@ -43,8 +43,10 @@ templ NotConfigured() {
 				/* max-width: 500px; */
 			}
 			.missconfigured {
-				color: yellow;
 				font-weight: bold;
+			}
+			.missconfigured a{
+				color: #d96f28;
 			}
 		</style>
 		</head>
@@ -57,7 +59,13 @@ templ NotConfigured() {
 					class="search-input"
 					placeholder="Search for files..."
 				/>
-				<h2 class="missconfigured">HashUp needs to be configured first.</h2>
+				<div class="missconfigured">
+					<h2>HashUp needs to be configured first.</h2>
+					<p>Read the quickstart guide at:</p>
+					<a href="https://github.com/rubiojr/hashub/tree/main/docs/quickstart.md" target="_blank">
+						https://github.com/rubiojr/hashub/tree/main/docs/quickstart.md
+					</a>
+				</div>
 			</div>
 			<div id="search-results" class="results-container"></div>
 		</body>
