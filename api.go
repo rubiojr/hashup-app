@@ -61,6 +61,10 @@ func fileStatsHandler() {
 func natsStreamInfoHandler() error {
 	http.HandleFunc("/stats/nats/stream/info", func(w http.ResponseWriter, r *http.Request) {
 		config, err := config.LoadDefaultConfig()
+		if err != nil {
+			http.Error(w, fmt.Errorf("failed to load HashUp config: %w", err).Error(), http.StatusInternalServerError)
+			return
+		}
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		nc, err := nats.Connect(config.Main.NatsServerURL)
@@ -86,10 +90,6 @@ func natsStreamInfoHandler() error {
 		}
 
 		clusterInfo := streamInfo.Cluster
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 
 		info := struct {
 			StreamName    string `json:"stream_name"`
