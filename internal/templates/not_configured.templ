@@ -1,0 +1,65 @@
+package templates
+
+templ NotConfigured() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>HashUp Search</title>
+			<script src="https://unpkg.com/htmx.org@1.9.6"></script>
+			<style>
+			body {
+				font-family: system-ui, -apple-system, sans-serif;
+				max-width: 600px;
+				margin: 0 auto;
+				padding: 2rem;
+				background-color: #0f0f0f;
+				color: #d96f28;
+			}
+			.search-title {
+			    color: #d96f28;
+				font-weight: bold;
+				font-size: 2.5rem;
+			}
+			.search-container {
+				margin: 1rem 0;
+				text-align: center;
+			}
+			.search-input {
+				width: 100%;
+				/* max-width: 600px; */
+				padding: 12px;
+				font-size: 16px;
+				border: 1px solid #ddd;
+				border-radius: 24px;
+				outline: none;
+			}
+			.search-input:focus {
+				box-shadow: 0 0 0 2px rgba(0, 0, 255, 0.2);
+			}
+			.results-container {
+				margin-top: 1px;
+				/* max-width: 500px; */
+			}
+			.missconfigured {
+				color: yellow;
+				font-weight: bold;
+			}
+		</style>
+		</head>
+		<body>
+			<div class="search-container">
+				<h1 class="search-title">HashUp Search</h1>
+				<input
+					type="text"
+					name="q"
+					class="search-input"
+					placeholder="Search for files..."
+				/>
+				<h2 class="missconfigured">HashUp needs to be configured first.</h2>
+			</div>
+			<div id="search-results" class="results-container"></div>
+		</body>
+	</html>
+}

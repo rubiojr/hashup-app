@@ -130,6 +130,11 @@ func searchHandler(c *cli.Context) {
 			http.NotFound(w, r)
 			return
 		}
+		_, err := config.LoadDefaultConfig()
+		if err != nil {
+			templates.NotConfigured().Render(r.Context(), w)
+			return
+		}
 		templates.Index().Render(r.Context(), w)
 	})
 
