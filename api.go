@@ -135,6 +135,13 @@ func searchHandler(c *cli.Context) {
 			templates.NotConfigured().Render(r.Context(), w)
 			return
 		}
+
+		_, err = getDBPath()
+		if err != nil {
+			templates.NotConfigured().Render(r.Context(), w)
+			return
+		}
+
 		templates.Index().Render(r.Context(), w)
 	})
 
