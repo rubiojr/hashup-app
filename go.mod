@@ -10,8 +10,8 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/nats-io/nats.go v1.40.1
 	github.com/rubiojr/gapp v0.0.0-20250324202719-b20a62340a48
+	github.com/rubiojr/webview_go v0.0.0-20250327120204-1b67221fdcb3
 	github.com/urfave/cli/v2 v2.27.6
-	github.com/webview/webview_go v0.0.0-20240831120633-6173450d4dd6
 )
 
 require (
@@ -47,3 +47,5 @@ require (
 	golang.org/x/text v0.23.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/webview/webview_go => github.com/rubiojr/webview_go v0.0.0-20250327120204-1b67221fdcb3
